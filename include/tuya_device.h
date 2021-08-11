@@ -11,14 +11,14 @@
 #ifdef __cplusplus
     extern "C" {
 #endif /* __cplusplus */
-    
+
 #ifdef _TUYA_DEVICE_GLOBAL
     #define _TUYA_DEVICE_EXT 
 #else
     #define _TUYA_DEVICE_EXT extern
 #endif /* _TUYA_DEVICE_GLOBAL */ 
 
-// device information define
+/* device information define */
 #define DEV_SW_VERSION USER_SW_VER
 #define PRODECT_ID "fnrwpglflmbhjvvh"
 

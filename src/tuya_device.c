@@ -30,16 +30,16 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
-/* wifi 相关配置 */
-#define WIFI_WORK_MODE_SEL          GWCM_OLD_PROD   //wifi 工作模式选择
-#define WIFI_CONNECT_OVERTIME_S     180             //wifi 配网超时时间，单位：s
+/* wifi config */
+#define WIFI_WORK_MODE_SEL          GWCM_OLD_PROD   /* select Wi-Fi work mode */
+#define WIFI_CONNECT_OVERTIME_S     180             /* connect network timeout time, uint: s */
 
-/* 配网按键相关宏,长按进入配网模式 */
-#define WIFI_KEY_PIN                TY_GPIOA_9 //按键引脚 
-#define WIFI_KEY_TIMER_MS           100          //轮询扫描按键所需的时间，一般默认为 100ms
-#define WIFI_KEY_LONG_PRESS_MS      3000        //按键长按时间设置
-#define WIFI_KEY_SEQ_PRESS_MS       400         //按键连按时间设置
-#define WIFI_KEY_LOW_LEVEL_ENABLE   TRUE        //TRUE：按键按下为低，FALSE：按键按下为高
+/* reset key config */
+#define WIFI_KEY_PIN                TY_GPIOA_9  /* reset button pin */
+#define WIFI_KEY_TIMER_MS           100         /* key scan poll time, default 100ms */
+#define WIFI_KEY_LONG_PRESS_MS      3000        /* long press time */
+#define WIFI_KEY_SEQ_PRESS_MS       400
+#define WIFI_KEY_LOW_LEVEL_ENABLE   TRUE
 
 /* Private variables ---------------------------------------------------------*/
 /* Private function prototypes -----------------------------------------------*/
@@ -47,60 +47,60 @@
 
 /**
  * @Function: wifi_key_process
- * @Description: 按键被按下后，调用该函数进行处理
- * @Input: port：触发引脚, type：按键触发类型, cnt:按键触发次数
+ * @Description: button is pressed, call the function to process
+ * @Input: port: button pin, type: button press type, cnt: press count
  * @Output: none
  * @Return: none
- * @Others: 长按触发配网模式，短按开关led
+ * @Others: long press enter connect network mode, normal press toggle led 
  */
-STATIC VOID_T wifi_key_process(TY_GPIO_PORT_E port,PUSH_KEY_TYPE_E type,INT_T cnt)
+STATIC VOID_T wifi_key_process(TY_GPIO_PORT_E port, PUSH_KEY_TYPE_E type, INT_T cnt)
 {
-    PR_DEBUG("port:%d,type:%d,cnt:%d", port, type, cnt);
+    PR_DEBUG("port:%d, type:%d, cnt:%d", port, type, cnt);
     OPERATE_RET op_ret = OPRT_OK;
 
     if (port = WIFI_KEY_PIN) {
-        if (LONG_KEY == type) { //press long enter linking network
-            /* 手动移除设备 */
-            tuya_iot_wf_gw_unactive();
+        if (LONG_KEY == type) { /* long press enter connect network mode */
+            op_ret = tuya_iot_wf_gw_unactive();
+            if (op_ret != OPRT_OK) {
+                PR_ERR("long press tuya_iot_wf_gw_unactive error, %d", op_ret);
+                return;
+            }
         } else if (NORMAL_KEY == type) {
 #if 1
-            if (get_cur_light_status() == LIGHT_OFF) { /* 如果当前 light 是打开的，关闭它 */
-                op_ret = set_light_status(LIGHT_ON);
+            if (get_light_status() == LIGHT_OFF) { 
+                op_ret = set_light_status(LIGHT_ON); /* light turn on */
                 if (op_ret != OPRT_OK) {
                     PR_ERR("dp process set light status error, %d", op_ret);
                     return;
                 }
             } else {
-                op_ret = set_light_status(LIGHT_OFF);
+                op_ret = set_light_status(LIGHT_OFF); /* light turn off */
                 if (op_ret != OPRT_OK) {
                     PR_ERR("dp process set light status error, %d", op_ret);
                     return;
                 }
             }
-            /* 设备状态改变后，应将设备状态同步到云端 */
+            /* update device current status to cloud */
             update_all_dp();
 #endif
         } else {
             PR_NOTICE("key type is no deal");
         }
     }
-
-    return;
 }
 
 /**
  * @Function: wifi_key_init
- * @Description: 初始化 WiFi 按键
+ * @Description: initiation reset key
  * @Input: none
  * @Output: none
  * @Return: none
- * @Others: 该函数需在tuya iot 初始化完成后调用（不能在 pre_app_init() 里面调用，可在其他三个中调用）。
+ * @Others:
  */
 STATIC VOID_T wifi_key_init(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
 
-    /* 按键相关初始化 */
     KEY_USER_DEF_S key_def;
 
     op_ret = key_init(NULL, 0, WIFI_KEY_TIMER_MS);
@@ -109,27 +109,25 @@ STATIC VOID_T wifi_key_init(VOID_T)
         return;
     }
 
-    /* 初始化 key 相关参数 */
+    /* config key parameter */
     memset(&key_def, 0, SIZEOF(key_def));
-    key_def.port = WIFI_KEY_PIN;                            //按键引脚
-    key_def.long_key_time = WIFI_KEY_LONG_PRESS_MS;         //长按时间配置
-    key_def.low_level_detect = WIFI_KEY_LOW_LEVEL_ENABLE;   //TRUE:低电平算按下，FALSE：高电平算按下
-    key_def.lp_tp = LP_ONCE_TRIG;   //
-    key_def.call_back = wifi_key_process;                   //按键按下后回调函数
-    key_def.seq_key_detect_time = WIFI_KEY_SEQ_PRESS_MS;    //连按间隔时间配置
+    key_def.port = WIFI_KEY_PIN;
+    key_def.long_key_time = WIFI_KEY_LONG_PRESS_MS;
+    key_def.low_level_detect = WIFI_KEY_LOW_LEVEL_ENABLE;
+    key_def.lp_tp = LP_ONCE_TRIG;
+    key_def.call_back = wifi_key_process;
+    key_def.seq_key_detect_time = WIFI_KEY_SEQ_PRESS_MS;
 
-    /* 注册按键 */
+    /* register key */
     op_ret = reg_proc_key(&key_def);
     if (op_ret != OPRT_OK) {
         PR_ERR("reg_proc_key err:%d", op_ret);
     }
-
-    return;
 }
 
 /**
  * @Function:mf_user_pre_gpio_test_cb 
- * @Description: gpio测试前置回调函数
+ * @Description: gpio test pre-callback function
  * @Input: none
  * @Output: none
  * @Return: none
@@ -137,12 +135,12 @@ STATIC VOID_T wifi_key_init(VOID_T)
  */
 VOID_T mf_user_pre_gpio_test_cb(VOID_T) 
 {
-    return;
+
 }
 
 /**
  * @Function: hw_reset_flash_data
- * @Description: 擦除 flash 中应用数据
+ * @Description: erase application data from flash
  * @Input: none
  * @Output: none
  * @Return: none
@@ -150,13 +148,12 @@ VOID_T mf_user_pre_gpio_test_cb(VOID_T)
  */
 STATIC VOID_T hw_reset_flash_data(VOID_T)
 {
-    /* 将存到 flash 中的应用数据全部擦除掉 */
-    return;
+    /* erase application data from flash */
 }
 
 /**
  * @Function:mf_user_enter_callback 
- * @Description: 通知应用已经进入到产测，在回调中对应用数据清除。
+ * @Description: tell application has entered the production test
  * @Input: none
  * @Output: none
  * @Return: none
@@ -165,27 +162,26 @@ STATIC VOID_T hw_reset_flash_data(VOID_T)
 VOID_T mf_user_enter_callback(VOID_T) 
 {
     hw_reset_flash_data();
-    return;
 }
 
 
 
 /**
  * @Function: mf_user_callback
- * @Description: 授权回调函数
+ * @Description: authorization callback function
  * @Input: none
  * @Output: none
  * @Return: none
- * @Others: 清空flash中存储的数据
+ * @Others:
  */
 VOID_T mf_user_callback(VOID_T) 
 {
-    return;
+
 }
 
 /**
  * @Function:mf_user_product_test_cb 
- * @Description: 成品测试回调
+ * @Description: Finished Product test callbacks
  * @Input: 
  * @Output: none
  * @Return: none
@@ -198,7 +194,7 @@ OPERATE_RET mf_user_product_test_cb(USHORT_T cmd,UCHAR_T *data, UINT_T len, OUT 
 
 /**
  * @Function: hw_report_all_dp_status
- * @Description: 上报所有 dp 点
+ * @Description: report all dp status
  * @Input: none
  * @Output: none
  * @Return: none
@@ -233,15 +229,15 @@ VOID_T pre_app_init(VOID_T)
  */
 VOID_T pre_device_init(VOID_T) 
 {
-    /* WiFi 按键  初始化 */
+    /* reset key init */
     wifi_key_init();
 
-    PR_DEBUG("%s",tuya_iot_get_sdk_info()); /* 打印 SDK 相关信息 */
-    PR_DEBUG("%s:%s", APP_BIN_NAME, DEV_SW_VERSION); /* 打印固件版本名称和版本号 */
-    PR_NOTICE("firmware compiled at %s %s", __DATE__, __TIME__); /* 打印固件编译时间 */
-    PR_NOTICE("system reset reason:[%s]",tuya_hal_system_get_rst_info()); /* 打印系统重启原因 */
+    PR_DEBUG("%s",tuya_iot_get_sdk_info()); /* print SDK information */
+    PR_DEBUG("%s:%s", APP_BIN_NAME, DEV_SW_VERSION); /* print the firmware name and version */
+    PR_NOTICE("firmware compiled at %s %s", __DATE__, __TIME__); /* print firmware compilation time */
+    PR_NOTICE("system reset reason:[%s]",tuya_hal_system_get_rst_info()); /* print system reboot causes */
 
-    SetLogManageAttr(TY_LOG_LEVEL_NOTICE); /* 设置日志打印等级 */
+    SetLogManageAttr(TY_LOG_LEVEL_NOTICE); /* set the log level */
 }
 
 /**
@@ -254,12 +250,12 @@ VOID_T pre_device_init(VOID_T)
  */
 VOID_T app_init(VOID_T) 
 {
-    return;
+
 }
 
 /**
  * @Function: status_changed_cb
- * @Description: wifi 连网状态改变后调用该函数
+ * @Description: call this function after the network connection status changes
  * @Input: status: current status
  * @Output: none
  * @Return: none
@@ -311,7 +307,7 @@ VOID_T upgrade_notify_cb(IN CONST FW_UG_S *fw, IN CONST INT_T download_result, I
 
 /**
  * @Function: gw_ug_inform_cb
- * @Description: ota升级通知回调
+ * @Description: ota inform callback
  * @Input: fw: firmware info
  * @Output: none
  * @Return: int:
@@ -329,7 +325,7 @@ STATIC INT_T gw_ug_inform_cb(IN CONST FW_UG_S *fw)
 
 /**
  * @Function: gw_reset_cb
- * @Description: 设备重置或 app 上移除设备后调用该函数
+ * @Description: called after reset device or app remove device 
  * @Input: type:gateway reset type
  * @Output: none
  * @Return: none
@@ -348,7 +344,7 @@ STATIC VOID_T gw_reset_cb(IN CONST GW_RESET_TYPE_E type)
 
 /**
  * @Function: dev_obj_dp_cb
- * @Description: 云端下发obj(bool, value, enum, string和fault)类型的数据后调用该函数
+ * @Description: called after the cloud sends data of type bool, value, enum, string or fault
  * @Input: dp:obj dp info
  * @Output: none
  * @Return: none
@@ -366,7 +362,7 @@ STATIC VOID_T dev_obj_dp_cb(IN CONST TY_RECV_OBJ_DP_S *dp)
 
 /**
  * @Function: dev_raw_dp_cb
- * @Description: 云端下发raw类型数据后调用该函数
+ * @Description: called after the cloud sends data of type raw
  * @Input: dp: raw dp info
  * @Output: none
  * @Return: none
@@ -384,12 +380,11 @@ STATIC VOID_T dev_raw_dp_cb(IN CONST TY_RECV_RAW_DP_S *dp)
 #endif
     PR_DEBUG_RAW("\n");
     PR_DEBUG("end");
-    return;
 }
 
 /**
  * @Function: dev_dp_query_cb
- * @Description: app进入面板后触发查询dp点状态
+ * @Description: click app panel report all data point status
  * @Input: dp_qry: query info
  * @Output: none
  * @Return: none
@@ -404,7 +399,7 @@ STATIC VOID_T dev_dp_query_cb(IN CONST TY_DP_QUERY_S *dp_qry)
 
 /**
  * @Function: wf_nw_status_cb
- * @Description: 设备连网状态发生改变后，调用该函数进行处理
+ * @Description: This function is called when the state of the device connection has changed
  * @Input: stat: curr network status
  * @Output: none
  * @Return: none
@@ -412,10 +407,10 @@ STATIC VOID_T dev_dp_query_cb(IN CONST TY_DP_QUERY_S *dp_qry)
  */
 STATIC VOID_T wf_nw_status_cb(IN CONST GW_WIFI_NW_STAT_E stat)
 {
-    /* 打印当前WiFi状态 */
+    /* print current Wi-Fi status */
     PR_NOTICE("wf_nw_status_cb, wifi_status:%d", stat);
 
-    /* 成功连接到云平台后上报所有DP状态 */
+    /* report all DP status when connected to the cloud */
     if (stat == STAT_CLOUD_CONN || stat == STAT_AP_CLOUD_CONN) {
         hw_report_all_dp_status();
     }
@@ -423,7 +418,7 @@ STATIC VOID_T wf_nw_status_cb(IN CONST GW_WIFI_NW_STAT_E stat)
 
 /**
  * @Function: device_init
- * @Description: tuya iot 所有工作都已完成
+ * @Description:
  * @Input: none
  * @Output: none
  * @Return: OPRT_OK: success  Other: fail
@@ -443,14 +438,14 @@ OPERATE_RET device_init(VOID_T)
         NULL,
     };
 
-    /* 涂鸦IoT框架初始化 */
+    /* tuya IoT framework initialization */
     op_ret = tuya_iot_wf_soc_dev_init_param(WIFI_WORK_MODE_SEL, WF_START_SMART_FIRST, &wf_cbs, NULL, PRODECT_ID, DEV_SW_VERSION);
     if(OPRT_OK != op_ret) {
         PR_ERR("tuya_iot_wf_soc_dev_init_param error,err_num:%d",op_ret);
         return op_ret;
     }
 
-    /* 注册Wi-Fi模组的状态回调函数，当模组连网状态发生改变时，会调用 wf_nw_status_cb() 函数 */
+    /* register Wi-Fi connection status change callback function */
     op_ret = tuya_iot_reg_get_wf_nw_stat_cb(wf_nw_status_cb);
     if(OPRT_OK != op_ret) {
         PR_ERR("tuya_iot_reg_get_wf_nw_stat_cb is error,err_num:%d",op_ret);

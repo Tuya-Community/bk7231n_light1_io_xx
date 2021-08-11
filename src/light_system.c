@@ -14,7 +14,7 @@ STATIC LED_STATUS_E cur_light_status = LIGHT_ON;
 
 /**
  * @Function: fast_boot
- * @Description: 将需要快速启动功能放到该函数中
+ * @Description: 
  * @Input: none
  * @Output: none
  * @Return: none
@@ -33,7 +33,7 @@ VOID_T fast_boot(VOID_T)
 
 /**
  * @Function: light_init
- * @Description: 灯的gpio口初始化
+ * @Description: light gpio init
  * @Input: none
  * @Output: none
  * @Return: none
@@ -43,26 +43,26 @@ OPERATE_RET light_init(VOID_T)
 {
      OPERATE_RET op_ret = OPRT_OK;
 
-    /* 设置pin口为上拉输出模式 */
+    /* light pin set output */
     op_ret = tuya_gpio_inout_set(LIGHT_PIN, FALSE);
     if (op_ret != OPRT_OK) {
         PR_ERR("light init gpio set inout error!");
         return op_ret;
     }
-    
+
+    /* light pin mode set pullup */
     op_ret = tuya_gpio_mode_set(LIGHT_PIN, TY_GPIO_PULLUP);
     if (op_ret != OPRT_OK) {
         PR_ERR("light init gpio mode set error!");
         return op_ret;
     }
     
-    /* 打开灯 */
-    op_ret = light_on();
+    /* light on */
+    op_ret = set_light_status(LIGHT_ON);
     if (op_ret != OPRT_OK) {
         PR_ERR("light init light on error!");
         return op_ret;
     }
-
 
     return op_ret;
     
@@ -70,17 +70,17 @@ OPERATE_RET light_init(VOID_T)
 
 /**
  * @Function: light_on
- * @Description: 开灯
+ * @Description:
  * @Input: none
  * @Output: none
  * @Return: none
  * @Others: none
  */
-OPERATE_RET light_on(VOID_T)
+STATIC OPERATE_RET light_on(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
 
-    /* pin口输出低电平，打开灯 */
+    /* pin set low level, light on */
     op_ret = tuya_gpio_write(LIGHT_PIN, FALSE);
     if (op_ret != OPRT_OK) {
         PR_ERR("light on error!");
@@ -94,17 +94,17 @@ OPERATE_RET light_on(VOID_T)
 
 /**
  * @Function: light_off
- * @Description: 关灯
+ * @Description:
  * @Input: none
  * @Output: none
  * @Return: none
  * @Others: none
  */
-OPERATE_RET light_off(VOID_T)
+STATIC OPERATE_RET light_off(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
 
-    /* pin口输出高电平，关闭灯 */
+    /* pin set high level, light off */
     op_ret = tuya_gpio_write(LIGHT_PIN, TRUE);
     if (op_ret != OPRT_OK) {
         PR_ERR("light off error!");
@@ -118,7 +118,7 @@ OPERATE_RET light_off(VOID_T)
 
 /**
  * @Function: set_light_status
- * @Description: 设置灯状态
+ * @Description:
  * @Input: status: LIGHT_ON or LIGHT_OFF
  * @Output: none
  * @Return: none
@@ -144,15 +144,15 @@ OPERATE_RET set_light_status(LED_STATUS_E status)
 }
 
 /**
- * @Function: get_cur_light_status
- * @Description: 获取灯状态
- * @Input: status: LIGHT_ON or LIGHT_OFF
+ * @Function: get_light_status
+ * @Description: 
+ * @Input: none
  * @Output: none
- * @Return: LIGHT_ON: 开灯状态
- *          LIGHT_OFF: 关灯状态
+ * @Return: LIGHT_ON
+ *          LIGHT_OFF
  * @Others: none
  */
-LED_STATUS_E get_cur_light_status(VOID_T)
+LED_STATUS_E get_light_status(VOID_T)
 {
     return cur_light_status;
 }
