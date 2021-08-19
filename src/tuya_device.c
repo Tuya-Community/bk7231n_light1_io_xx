@@ -1,18 +1,16 @@
-/*
- * @Author: shiliu
- * @email: 
- * @LastEditors: shiliu
- * @file name: tuya_device.c
- * @Description: 
- * @Copyright: HANGZHOU TUYA INFORMATION TECHNOLOGY CO.,LTD
- * @Company: http://www.tuya.com
- * @Date: 2021-02-22 15:10:00
- * @LastEditTime: 2021-07-29 15:10:00
- */
+/**
+* @file tuya_device.c
+* @author www.tuya.com
+* @brief 
+* @version 0.1
+* @date 2021-08-19
+*
+* @copyright Copyright (c) tuya.inc 2021
+*
+*/
 
 #define _TUYA_DEVICE_GLOBAL
 
-/* Private includes ----------------------------------------------------------*/
 #include "uni_log.h"
 #include "tuya_iot_wifi_api.h"
 #include "tuya_hal_system.h"
@@ -23,13 +21,15 @@
 #include "tuya_key.h"
 #include "base_event_info.h"
 
-
 #include "tuya_device.h"
 #include "light_system.h"
 #include "dp_process.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
+/***********************************************************
+*************************micro define***********************
+***********************************************************/
+#define APP_RAW_PRINT_DEBUG 1
+
 /* wifi config */
 #define WIFI_WORK_MODE_SEL          GWCM_OLD_PROD   /* select Wi-Fi work mode */
 #define WIFI_CONNECT_OVERTIME_S     180             /* connect network timeout time, uint: s */
@@ -41,22 +41,34 @@
 #define WIFI_KEY_SEQ_PRESS_MS       400
 #define WIFI_KEY_LOW_LEVEL_ENABLE   TRUE
 
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
+/***********************************************************
+***********************typedef define***********************
+***********************************************************/
+
+
+/***********************************************************
+***********************variable define**********************
+***********************************************************/
+
+
+/***********************************************************
+***********************function define**********************
+***********************************************************/
 
 /**
- * @Function: wifi_key_process
- * @Description: button is pressed, call the function to process
- * @Input: port: button pin, type: button press type, cnt: press count
- * @Output: none
- * @Return: none
- * @Others: long press enter connect network mode, normal press toggle led 
- */
+* @brief button is pressed, call the function to process
+*
+* @param[in] port: button pin
+* @param[in] type: button press type
+* @param[in] cnt: press count
+* @return none
+* @Others: long press enter connect network mode, normal press toggle led 
+*/
 STATIC VOID_T wifi_key_process(TY_GPIO_PORT_E port, PUSH_KEY_TYPE_E type, INT_T cnt)
 {
-    PR_DEBUG("port:%d, type:%d, cnt:%d", port, type, cnt);
     OPERATE_RET op_ret = OPRT_OK;
+
+    PR_DEBUG("port:%d, type:%d, cnt:%d", port, type, cnt);
 
     if (port = WIFI_KEY_PIN) {
         if (LONG_KEY == type) { /* long press enter connect network mode */
@@ -66,7 +78,7 @@ STATIC VOID_T wifi_key_process(TY_GPIO_PORT_E port, PUSH_KEY_TYPE_E type, INT_T 
                 return;
             }
         } else if (NORMAL_KEY == type) {
-#if 1
+#if 1 /* turn on or off the button to control the light function */
             if (get_light_status() == LIGHT_OFF) { 
                 op_ret = set_light_status(LIGHT_ON); /* light turn on */
                 if (op_ret != OPRT_OK) {
@@ -90,13 +102,11 @@ STATIC VOID_T wifi_key_process(TY_GPIO_PORT_E port, PUSH_KEY_TYPE_E type, INT_T 
 }
 
 /**
- * @Function: wifi_key_init
- * @Description: initiation reset key
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others:
- */
+* @brief initiation reset key
+*
+* @param[in] none
+* @return none
+*/
 STATIC VOID_T wifi_key_init(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -126,107 +136,89 @@ STATIC VOID_T wifi_key_init(VOID_T)
 }
 
 /**
- * @Function:mf_user_pre_gpio_test_cb 
- * @Description: gpio test pre-callback function
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief pre_gpio_test gpio test pre-interface, used to prepare for the gpio test
+*
+* @return none
+*/
 VOID_T mf_user_pre_gpio_test_cb(VOID_T) 
 {
-
+    return;
 }
 
 /**
- * @Function: hw_reset_flash_data
- * @Description: erase application data from flash
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: 
- */
+* @brief erase application data from flash
+*
+* @return none
+*/
 STATIC VOID_T hw_reset_flash_data(VOID_T)
 {
     /* erase application data from flash */
+    return;
 }
 
 /**
- * @Function:mf_user_enter_callback 
- * @Description: tell application has entered the production test
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief configure to enter the production test callback interface
+*
+* @return none
+*/
 VOID_T mf_user_enter_callback(VOID_T) 
 {
     hw_reset_flash_data();
+
+    return;
 }
 
-
-
 /**
- * @Function: mf_user_callback
- * @Description: authorization callback function
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others:
- */
+* @brief configuring the write callback interface
+*
+* @return none
+*/
 VOID_T mf_user_callback(VOID_T) 
 {
-
+    return;
 }
 
 /**
- * @Function:mf_user_product_test_cb 
- * @Description: Finished Product test callbacks
- * @Input: 
- * @Output: none
- * @Return: none
- * @Others: none
- */
+/**
+* @brief Finished Product test callbacks
+*
+* @return OPRT_OK
+*/
 OPERATE_RET mf_user_product_test_cb(USHORT_T cmd,UCHAR_T *data, UINT_T len, OUT UCHAR_T **ret_data,OUT USHORT_T *ret_len) 
 {
     return OPRT_OK;
 }
 
 /**
- * @Function: hw_report_all_dp_status
- * @Description: report all dp status
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: 
- */
+* @brief report all dp status
+*
+* @return none
+*/
 VOID_T hw_report_all_dp_status(VOID_T)
 {
     /* report all dp status */
     update_all_dp();
+
+    return;
 }
 
 /**
- * @Function:pre_app_init 
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief application initialization prep work
+*
+* @return none
+*/
 VOID_T pre_app_init(VOID_T) 
 {
     ty_subscribe_event(EVENT_SDK_EARLY_INIT_OK, "early_init", fast_boot, FALSE);
+
+    return;
 }
 
 /**
- * @Function:pre_device_init 
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief device initialization prep work
+*
+* @return none
+*/
 VOID_T pre_device_init(VOID_T) 
 {
     /* reset key init */
@@ -238,46 +230,43 @@ VOID_T pre_device_init(VOID_T)
     PR_NOTICE("system reset reason:[%s]",tuya_hal_system_get_rst_info()); /* print system reboot causes */
 
     SetLogManageAttr(TY_LOG_LEVEL_NOTICE); /* set the log level */
+
+    return;
 }
 
 /**
- * @Function:app_init 
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief application initialization interface
+*
+* @return none
+*/
 VOID_T app_init(VOID_T) 
 {
-
+    return;
 }
 
 /**
- * @Function: status_changed_cb
- * @Description: call this function after the network connection status changes
- * @Input: status: current status
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief report all dp status
+*
+* @return none
+*/
 VOID_T status_changed_cb(IN CONST GW_STATUS_E status)
 {
     PR_NOTICE("status_changed_cb is status:%d",status);
+
+    return;
 }
 
 /**
- * @Function: get_file_data_cb
- * @Description: firmware download content process callback
- * @Input: fw: firmware info
- * @Input: total_len: firmware total size
- * @Input: offset: offset of this download package
- * @Input: data && len: this download package
- * @Input: pri_data: private data
- * @Output: remain_len: the size left to process in next cb
- * @Return: OPRT_OK: success  Other: fail
- * @Others: none
- */
+* @brief firmware download content process callback
+*
+* @param[in] fw: firmware info
+* @param[in] total_len: firmware total size
+* @param[in] offset: offset of this download package
+* @param[in] data && len: this download package
+* @param[out] remain_len: the size left to process in next cb
+* @param[in] pri_data: private data
+* @return OPRT_OK: success  Other: fail
+*/
 STATIC OPERATE_RET get_file_data_cb(IN CONST FW_UG_S *fw, IN CONST UINT_T total_len, IN CONST UINT_T offset,
                                      IN CONST BYTE_T *data, IN CONST UINT_T len, OUT UINT_T *remain_len, IN PVOID_T 
 pri_data)
@@ -290,29 +279,27 @@ pri_data)
 }
 
 /**
- * @Function: upgrade_notify_cb
- * @Description: firmware download finish result callback
- * @Input: fw: firmware info
- * @Input: download_result: 0 means download succes. other means fail
- * @Input: pri_data: private data
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief firmware download finish result callback
+*
+* @param[in] fw: firmware info
+* @param[in] download_result: 0 means download succes. other means fail
+* @param[in] pri_data: private data
+* @return none
+*/
 VOID_T upgrade_notify_cb(IN CONST FW_UG_S *fw, IN CONST INT_T download_result, IN PVOID_T pri_data)
 {
     PR_DEBUG("download  Finish");
     PR_DEBUG("download_result:%d", download_result);
+
+    return;
 }
 
 /**
- * @Function: gw_ug_inform_cb
- * @Description: ota inform callback
- * @Input: fw: firmware info
- * @Output: none
- * @Return: int:
- * @Others: 
- */
+* @brief ota inform callback
+*
+* @param[in] fw: firmware info
+* @return 
+*/
 STATIC INT_T gw_ug_inform_cb(IN CONST FW_UG_S *fw)
 {
     PR_DEBUG("Rev GW Upgrade Info");
@@ -324,13 +311,12 @@ STATIC INT_T gw_ug_inform_cb(IN CONST FW_UG_S *fw)
 }
 
 /**
- * @Function: gw_reset_cb
- * @Description: called after reset device or app remove device 
- * @Input: type:gateway reset type
- * @Output: none
- * @Return: none
- * @Others: reset factory clear flash data
- */
+* @brief called after reset device or app remove device 
+*
+* @param[in] type: gateway reset type
+* @return none
+* @others reset factory clear flash data
+*/
 STATIC VOID_T gw_reset_cb(IN CONST GW_RESET_TYPE_E type)
 {
     PR_DEBUG("gw_reset_cb type:%d",type);
@@ -340,71 +326,72 @@ STATIC VOID_T gw_reset_cb(IN CONST GW_RESET_TYPE_E type)
     }
 
     hw_reset_flash_data();
+
+    return;
 }
 
 /**
- * @Function: dev_obj_dp_cb
- * @Description: called after the cloud sends data of type bool, value, enum, string or fault
- * @Input: dp:obj dp info
- * @Output: none
- * @Return: none
- * @Others: app send data by dpid  control device stat
- */
+* @brief called after the cloud sends data of type bool, value, enum, string or fault
+*
+* @param[in] dp: obj dp info
+* @return none
+*/
 STATIC VOID_T dev_obj_dp_cb(IN CONST TY_RECV_OBJ_DP_S *dp)
 {
-    PR_DEBUG("dp->cid:%s dp->dps_cnt:%d",dp->cid,dp->dps_cnt);
     UCHAR_T i = 0;
+
+    PR_DEBUG("dp->cid:%s dp->dps_cnt:%d", dp->cid, dp->dps_cnt);
 
     for(i = 0;i < dp->dps_cnt;i++) {
         deal_dp_proc(&(dp->dps[i]));
     }
+
+    return;
 }
 
 /**
- * @Function: dev_raw_dp_cb
- * @Description: called after the cloud sends data of type raw
- * @Input: dp: raw dp info
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief called after the cloud sends data of type raw
+*
+* @param[in] dp: raw dp info
+* @return none
+*/
 STATIC VOID_T dev_raw_dp_cb(IN CONST TY_RECV_RAW_DP_S *dp)
 {
-    PR_DEBUG("raw data dpid:%d",dp->dpid);
-    PR_DEBUG("recv len:%d",dp->len);
-#if 1 
+    PR_DEBUG("raw data dpid:%d", dp->dpid);
+    PR_DEBUG("recv len:%d", dp->len);
+#if APP_RAW_PRINT_DEBUG
     INT_T i = 0;
-    for(i = 0;i < dp->len;i++) {
-        PR_DEBUG_RAW("%02X ",dp->data[i]);
+    for(i=0; i<dp->len; i++) {
+        PR_DEBUG_RAW("%02X ", dp->data[i]);
     }
 #endif
     PR_DEBUG_RAW("\n");
     PR_DEBUG("end");
+
+    return;
 }
 
 /**
- * @Function: dev_dp_query_cb
- * @Description: click app panel report all data point status
- * @Input: dp_qry: query info
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief query device dp status
+*
+* @param[in] dp_qry: query info
+* @return none
+*/
 STATIC VOID_T dev_dp_query_cb(IN CONST TY_DP_QUERY_S *dp_qry) 
 {
     PR_NOTICE("Recv DP Query Cmd");
 
     hw_report_all_dp_status();
+
+    return;
 }
 
 /**
- * @Function: wf_nw_status_cb
- * @Description: This function is called when the state of the device connection has changed
- * @Input: stat: curr network status
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief This function is called when the state of the device connection has changed
+*
+* @param[in] stat: curr network status
+* @return none
+*/
 STATIC VOID_T wf_nw_status_cb(IN CONST GW_WIFI_NW_STAT_E stat)
 {
     /* print current Wi-Fi status */
@@ -414,16 +401,15 @@ STATIC VOID_T wf_nw_status_cb(IN CONST GW_WIFI_NW_STAT_E stat)
     if (stat == STAT_CLOUD_CONN || stat == STAT_AP_CLOUD_CONN) {
         hw_report_all_dp_status();
     }
+
+    return;
 }
 
 /**
- * @Function: device_init
- * @Description:
- * @Input: none
- * @Output: none
- * @Return: OPRT_OK: success  Other: fail
- * @Others: none
- */
+* @brief device initialization interface
+*
+* @return OPRT_OK: success, others: please refer to tuya error code description document
+*/
 OPERATE_RET device_init(VOID_T) 
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -441,17 +427,16 @@ OPERATE_RET device_init(VOID_T)
     /* tuya IoT framework initialization */
     op_ret = tuya_iot_wf_soc_dev_init_param(WIFI_WORK_MODE_SEL, WF_START_SMART_FIRST, &wf_cbs, NULL, PRODECT_ID, DEV_SW_VERSION);
     if(OPRT_OK != op_ret) {
-        PR_ERR("tuya_iot_wf_soc_dev_init_param error,err_num:%d",op_ret);
+        PR_ERR("tuya_iot_wf_soc_dev_init_param error,err_num:%d", op_ret);
         return op_ret;
     }
 
     /* register Wi-Fi connection status change callback function */
     op_ret = tuya_iot_reg_get_wf_nw_stat_cb(wf_nw_status_cb);
     if(OPRT_OK != op_ret) {
-        PR_ERR("tuya_iot_reg_get_wf_nw_stat_cb is error,err_num:%d",op_ret);
+        PR_ERR("tuya_iot_reg_get_wf_nw_stat_cb is error,err_num:%d", op_ret);
         return op_ret;
     }
 
     return op_ret;
 }
-

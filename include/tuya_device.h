@@ -1,16 +1,22 @@
-﻿#ifndef __TUYA_DEVICE_H__
+﻿/**
+* @file tuya_device.h
+* @author www.tuya.com
+* @brief 
+* @version 0.1
+* @date 2021-08-19
+*
+* @copyright Copyright (c) tuya.inc 2021
+*
+*/
+ 
+#ifndef __TUYA_DEVICE_H__
 #define __TUYA_DEVICE_H__
 
-/* Includes ------------------------------------------------------------------*/
-#include "tuya_cloud_types.h"
 #include "tuya_cloud_com_defs.h"
-
-/* Exported types ------------------------------------------------------------*/
-/* Exported constants --------------------------------------------------------*/
-/* Exported macro ------------------------------------------------------------*/
+ 
 #ifdef __cplusplus
-    extern "C" {
-#endif /* __cplusplus */
+extern "C" {
+#endif
 
 #ifdef _TUYA_DEVICE_GLOBAL
     #define _TUYA_DEVICE_EXT 
@@ -18,18 +24,30 @@
     #define _TUYA_DEVICE_EXT extern
 #endif /* _TUYA_DEVICE_GLOBAL */ 
 
+/***********************************************************
+*************************micro define***********************
+***********************************************************/
 /* device information define */
 #define DEV_SW_VERSION USER_SW_VER
 #define PRODECT_ID "fnrwpglflmbhjvvh"
 
-/* Exported functions ------------------------------------------------------- */
+/***********************************************************
+***********************typedef define***********************
+***********************************************************/
 
-_TUYA_DEVICE_EXT \
-OPERATE_RET device_init(VOID_T);
+
+/***********************************************************
+***********************variable define**********************
+***********************************************************/
+
+
+/***********************************************************
+***********************function define**********************
+***********************************************************/
+
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __TUYA_DEVICE_H__ */
-
+#endif /*__TUYA_DEVICE_H__*/

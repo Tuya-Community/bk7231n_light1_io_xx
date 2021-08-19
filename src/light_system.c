@@ -1,25 +1,43 @@
-/* Private includes ----------------------------------------------------------*/
+/**
+* @file light_system.c
+* @author www.tuya.com
+* @brief 
+* @version 0.1
+* @date 2021-08-19
+*
+* @copyright Copyright (c) tuya.inc 2021
+*
+*/
+
 #include "light_system.h"
-#include "tuya_gpio.h"
 #include "uni_log.h"
 
+/***********************************************************
+*************************micro define***********************
+***********************************************************/
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
+
+/***********************************************************
+***********************typedef define***********************
+***********************************************************/
+
+
+/***********************************************************
+***********************variable define**********************
+***********************************************************/
 STATIC LED_STATUS_E cur_light_status = LIGHT_ON;
 
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
+
+/***********************************************************
+***********************function define**********************
+***********************************************************/
+
 
 /**
- * @Function: fast_boot
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief need quick start tasks
+
+* @return none
+*/
 VOID_T fast_boot(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -28,20 +46,17 @@ VOID_T fast_boot(VOID_T)
         PR_ERR("fast boot light init error, %d", op_ret);
         return;
     }
+    return;
 }
 
-
 /**
- * @Function: light_init
- * @Description: light gpio init
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief light gpio init
+*
+* @return none
+*/
 OPERATE_RET light_init(VOID_T)
 {
-     OPERATE_RET op_ret = OPRT_OK;
+    OPERATE_RET op_ret = OPRT_OK;
 
     /* light pin set output */
     op_ret = tuya_gpio_inout_set(LIGHT_PIN, FALSE);
@@ -63,19 +78,14 @@ OPERATE_RET light_init(VOID_T)
         PR_ERR("light init light on error!");
         return op_ret;
     }
-
     return op_ret;
-    
 }
 
 /**
- * @Function: light_on
- * @Description:
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief light on
+*
+* @return none
+*/
 STATIC OPERATE_RET light_on(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -93,13 +103,10 @@ STATIC OPERATE_RET light_on(VOID_T)
 }
 
 /**
- * @Function: light_off
- * @Description:
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief light off
+*
+* @return none
+*/
 STATIC OPERATE_RET light_off(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -117,13 +124,11 @@ STATIC OPERATE_RET light_off(VOID_T)
 }
 
 /**
- * @Function: set_light_status
- * @Description:
- * @Input: status: LIGHT_ON or LIGHT_OFF
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief set light status
+*
+* @param[in] status: LIGHT_ON or LIGHT_OFF
+* @return none
+*/
 OPERATE_RET set_light_status(LED_STATUS_E status)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -144,17 +149,11 @@ OPERATE_RET set_light_status(LED_STATUS_E status)
 }
 
 /**
- * @Function: get_light_status
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: LIGHT_ON
- *          LIGHT_OFF
- * @Others: none
- */
+* @brief get light status
+*
+* @return light status: LIGHT_ON or LIGHT_OFF
+*/
 LED_STATUS_E get_light_status(VOID_T)
 {
     return cur_light_status;
 }
-
-

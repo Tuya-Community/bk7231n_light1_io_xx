@@ -1,4 +1,14 @@
-/* Private includes ----------------------------------------------------------*/
+/**
+* @file dp_process.c
+* @author www.tuya.com
+* @brief 
+* @version 0.1
+* @date 2021-08-19
+*
+* @copyright Copyright (c) tuya.inc 2021
+*
+*/
+
 #include "uni_log.h"
 #include "tuya_cloud_wifi_defs.h"
 #include "tuya_cloud_com_defs.h"
@@ -7,20 +17,29 @@
 #include "light_system.h"
 #include "dp_process.h"
 
-/* Private typedef -----------------------------------------------------------*/
-/* Private define ------------------------------------------------------------*/
-/* Private variables ---------------------------------------------------------*/
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
+/***********************************************************
+*************************micro define***********************
+***********************************************************/
+
+
+/***********************************************************
+***********************typedef define***********************
+***********************************************************/
+
+
+/***********************************************************
+***********************variable define**********************
+***********************************************************/
+
+/***********************************************************
+***********************function define**********************
+***********************************************************/
 
 /**
- * @Function: update_all_dp
- * @Description: 
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief upload all dp data
+*
+* @return none
+*/
 VOID_T update_all_dp(VOID_T)
 {
     OPERATE_RET op_ret = OPRT_OK;
@@ -60,22 +79,20 @@ VOID_T update_all_dp(VOID_T)
 }
 
 /**
- * @Function: deal_dp_proc
- * @Description:
- * @Input: none
- * @Output: none
- * @Return: none
- * @Others: none
- */
+* @brief handle dp commands from the cloud
+*
+* @param[in] root: pointer header for dp data
+* @return none
+*/
 VOID_T deal_dp_proc(IN CONST TY_OBJ_DP_S *root)
 {
     OPERATE_RET op_ret = OPRT_OK;
 
     UCHAR_T dpid;
     dpid = root->dpid;
-    PR_DEBUG("dpid:%d",dpid);
+    PR_DEBUG("dpid:%d", dpid);
 
-     switch(dpid) {
+    switch(dpid) {
         case DPID_LIGHT_SWITCH:
             if (root->value.dp_bool == TRUE) {
                 op_ret = set_light_status(LIGHT_ON);
@@ -99,5 +116,3 @@ VOID_T deal_dp_proc(IN CONST TY_OBJ_DP_S *root)
             break;
     }
 }
-
-
