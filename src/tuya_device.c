@@ -29,6 +29,7 @@
 *************************micro define***********************
 ***********************************************************/
 #define APP_RAW_PRINT_DEBUG 1
+#define IGNORE_MF_TEST      0
 
 /* wifi config */
 #define WIFI_WORK_MODE_SEL          GWCM_OLD_PROD   /* select Wi-Fi work mode */
@@ -230,6 +231,10 @@ VOID_T pre_device_init(VOID_T)
     PR_NOTICE("system reset reason:[%s]",tuya_hal_system_get_rst_info()); /* print system reboot causes */
 
     SetLogManageAttr(TY_LOG_LEVEL_NOTICE); /* set the log level */
+
+#if IGNORE_MF_TEST
+    mf_test_ignore_close_flag();
+#endif
 
     return;
 }
