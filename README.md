@@ -8,4 +8,4 @@
 |    S2    |  GPIO_9  | 按键引脚，按下为低电平。涂鸦封装的引脚名称为`TY_GPIOA_9`。 |
 |    D2    | GPIO_16  |  LED引脚，低电平点亮。涂鸦封装的引脚名称为`TY_GPIOA_16`。  |
 
-在bk7231N SDK的apps目录下clone该项目
+在bk7231N SDK的apps目录下clone该项目，然后回到 SDK 的根目录即可编译该demo
