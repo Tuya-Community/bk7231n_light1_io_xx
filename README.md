@@ -15,8 +15,8 @@ The pins used in the experiment are described below, click to view [Details of C
 
 | Name |   Pin   |                           Notes                            |
 | :--: | :-----: | :--------------------------------------------------------: |
-|  S2  | GPIO_9  | 按键引脚，按下为低电平。涂鸦封装的引脚名称为`TY_GPIOA_9`。 |
-|  D2  | GPIO_16 |  LED引脚，低电平点亮。涂鸦封装的引脚名称为`TY_GPIOA_16`。  |
+|  S2  | GPIO_9  | Key pins, press is low. The pin name of SDK is `TY_GPIOA_9`. |
+|  D2  | GPIO_16 | LED pin, low level is light. The pin name of SDK is `TY_GPIOA_16`.|
 
 Clone the project in the apps directory of the bk7231N SDK, then go back to the root of the SDK to compile the demo.
 
